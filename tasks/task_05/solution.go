@@ -1,28 +1,26 @@
 package main
 
 type Cache[K comparable, V any] struct {
-	capacity int
 	items map[K]V
 }
 
 func NewCache[K comparable, V any](capacity int) *Cache[K, V] {
+	var items map[K]V
+	if capacity > 0 {
+		items = make(map[K]V, capacity)
+	}
 	return &Cache[K, V]{
-		capacity:  capacity,
-		items: make(map[K]V),
+		items: items,
 	}
 }
 
 func (c *Cache[K, V]) Set(key K, value V) {
-	if c.capacity <= 0 {
-		return
+	if c.items != nil {
+		c.items[key] = value
 	}
-	c.items[key] = value
 }
 
 func (c *Cache[K, V]) Get(key K) (V, bool) {
-	if val, ok := c.items[key]; c.capacity > 0 && ok {
-		return val, true
-	}
-	var zero V
-	return zero, false
+	val, ok := c.items[key]
+	return val, ok
 }
